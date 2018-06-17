@@ -16,15 +16,15 @@
 该命令将会创建包含下列内容的 tutorial 目录:
 
     tutorial/
-    scrapy.cfg
-    tutorial/
-        __init__.py
-        items.py
-        pipelines.py
-        settings.py
-        spiders/
+        scrapy.cfg
+        tutorial/
             __init__.py
-            ...
+            items.py
+            pipelines.py
+            settings.py
+            spiders/
+                __init__.py
+                ...
 
 这些文件分别是:
 - scrapy.cfg: 项目的配置文件
