@@ -1,38 +1,35 @@
-# Scrapy入门教程
-本笔记是跟随[scrapy官网](http://scrapy-chs.readthedocs.io/zh_CN/latest/intro/tutorial.html)学习的第一个案例
+# Scrapy-抓取电影下载链接
+本项目是 python scrapy 爬虫 练手项目，仅供学习使用。
 
-本篇教程中将带您完成下列任务:
-1. 创建一个Scrapy项目
-2. 定义提取的Item
-3. 编写爬取网站的 spider 并提取 Item
-4. 编写 Item Pipeline 来存储提取到的Item(即数据)
+本项目的爬取目标是 [电影天堂-最新电影](https://www.dy2018.com/html/gndy/dyzz/) 的所有电影的title，详情页的link以及每个详情页的电影简介和磁力链接。
 
+话不多说，接下来就直接开始吧
 
 ## 创建项目
 在开始爬取之前，您必须创建一个新的Scrapy项目。 进入您打算存储代码的目录中，运行下列命令:
 
-    scrapy startproject tutorial
+    scrapy startproject dianying
 
 该命令将会创建包含下列内容的 tutorial 目录:
 
-    tutorial/
-    scrapy.cfg
-    tutorial/
-        __init__.py
-        items.py
-        pipelines.py
-        settings.py
-        spiders/
+    dianying/
+        scrapy.cfg
+        dianying/
             __init__.py
-            ...
+            items.py
+            pipelines.py
+            settings.py
+            spiders/
+                __init__.py
+                ...
 
 这些文件分别是:
 - scrapy.cfg: 项目的配置文件
-- tutorial/: 该项目的python模块。之后您将在此加入代码。
-- tutorial/items.py: 项目中的item文件.
-- tutorial/pipelines.py: 项目中的pipelines文件.
-- tutorial/settings.py: 项目的设置文件.
-- tutorial/spiders/: 放置spider代码的目录.
+- dianying/: 该项目的python模块。之后您将在此加入代码。
+- dianying/items.py: 项目中的item文件.
+- dianying/pipelines.py: 项目中的pipelines文件.
+- dianying/settings.py: 项目的设置文件.
+- dianying/spiders/: 放置spider代码的目录.
 
 
 ## 定义Item
@@ -40,19 +37,20 @@ Item 是保存爬取到的数据的容器；其使用方法和python字典类似
 
 类似在ORM中做的一样，您可以通过创建一个 scrapy.Item 类， 并且定义类型为 scrapy.Field 的类属性来定义一个Item。 (如果不了解ORM, 不用担心，您会发现这个步骤非常简单)
 
-首先根据需要从dmoz.org获取到的数据对item进行建模。 我们需要从dmoz中获取名字，url，以及网站的描述。 对此，在item中定义相应的字段。编辑 tutorial 目录中的 items.py 文件:
+首先根据需要从 电影天堂-最新电影 获取到的数据对item进行建模。 我们需要从 最新电影 中获取所有电影的title，详情页的link以及每个详情页的电影简介和磁力链接。 对此，在item中定义相应的字段。编辑 dianying 目录中的 items.py 文件:
 
     import scrapy
 
-    class DmozItem(scrapy.Item):
+    class DianyingItem(scrapy.Item):
         title = scrapy.Field()
         link = scrapy.Field()
-        desc = scrapy.Field()
+        jianjie = scrapy.Field()
+        magnet = scrapy.Field()
 
 一开始这看起来可能有点复杂，但是通过定义item， 您可以很方便的使用Scrapy的其他方法。而这些方法需要知道您的item的定义。
 
 
-## 编写第一个爬虫(Spider)
+## 编写爬虫(Spider)
 Spider是用户编写用于从单个网站(或者一些网站)爬取数据的类。
 
 其包含了一个用于下载的初始URL，如何跟进网页中的链接以及如何分析页面中的内容， 提取生成 item 的方法。
@@ -66,29 +64,22 @@ Spider是用户编写用于从单个网站(或者一些网站)爬取数据的类
 ### 爬取
 进入项目的根目录，执行下列命令启动spider:
 
-crawl dmoz 启动用于爬取 dmoz.org 的spider，您将得到类似的输出:
+    scrapy crawl dianying
 
-    2014-01-23 18:13:07-0400 [scrapy] INFO: Scrapy started (bot: tutorial)
-    2014-01-23 18:13:07-0400 [scrapy] INFO: Optional features available: ...
-    2014-01-23 18:13:07-0400 [scrapy] INFO: Overridden settings: {}
-    2014-01-23 18:13:07-0400 [scrapy] INFO: Enabled extensions: ...
-    2014-01-23 18:13:07-0400 [scrapy] INFO: Enabled downloader middlewares: ...
-    2014-01-23 18:13:07-0400 [scrapy] INFO: Enabled spider middlewares: ...
-    2014-01-23 18:13:07-0400 [scrapy] INFO: Enabled item pipelines: ...
-    2014-01-23 18:13:07-0400 [dmoz] INFO: Spider opened
-    2014-01-23 18:13:08-0400 [dmoz] DEBUG: Crawled (200) <GET http://www.dmoz.org/Computers/Programming/Languages/Python/Resources/> (referer: None)
-    2014-01-23 18:13:09-0400 [dmoz] DEBUG: Crawled (200) <GET http://www.dmoz.org/Computers/Programming/Languages/Python/Books/> (referer: None)
-    2014-01-23 18:13:09-0400 [dmoz] INFO: Closing spider (finished)
+crawl dianying 启动用于爬取 dy2018.com 的spider，您将得到类似的输出:
 
-查看包含 [dmoz] 的输出，可以看到输出的log中包含定义在 start_urls 的初始URL，并且与spider中是一一对应的。在log中可以看到其没有指向其他页面( (referer:None) )。
+    2018-06-17 08:26:01 [scrapy.core.engine] INFO: Spider opened
+    2018-06-17 08:26:01 [scrapy.extensions.logstats] INFO: Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+    2018-06-17 08:26:01 [scrapy.extensions.telnet] DEBUG: Telnet console listening on 127.0.0.1:6023
+    2018-06-17 08:26:01 [scrapy.core.engine] DEBUG: Crawled (404) <GET https://www.dy2018.com/robots.txt> (referer: None)
+    2018-06-17 08:26:01 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.dy2018.com/html/gndy/dyzz/> (referer: None)
+    2018-06-17 08:26:01 [scrapy.core.engine] INFO: Closing spider (finished)
 
-除此之外，更有趣的事情发生了。就像我们 parse 方法指定的那样，有两个包含url所对应的内容的文件被创建了: Book , Resources 。
+查看输出，可以看到输出的log中包含定义在 start_urls 的初始URL，并且与spider中是一一对应的。在log中可以看到其没有指向其他页面( (referer:None) )。
 
+除此之外，更有趣的事情发生了。就像我们 parse 方法指定的那样，有一个包含url所对应的内容的文件被创建了: dyzz 。
 
-#### 刚才发生了什么？
-Scrapy为Spider的 start_urls 属性中的每个URL创建了 scrapy.Request 对象，并将 parse 方法作为回调函数(callback)赋值给了Request。
-
-Request对象经过调度，执行生成 scrapy.http.Response 对象并送回给spider parse() 方法。
+> 这里的dyzz文件，打开后可能有编码问题，切换成GBK编码格式就不会有乱码信息了
 
 
 ### 提取Item
@@ -117,28 +108,26 @@ Selector有四个基本的方法:
 
 您需要进入项目的根目录，执行下列命令来启动shell:
 
-    scrapy shell "http://www.dmoz.org/Computers/Programming/Languages/Python/Books/"
+    scrapy shell "https://www.dy2018.com/html/gndy/dyzz/"
 
 > 当您在终端运行Scrapy时，请一定记得给url地址加上引号，否则包含参数的url(例如 & 字符)会导致Scrapy运行失败。
 
 shell的输出类似:
 
-    [ ... Scrapy log here ... ]
-    2015-01-07 22:01:53+0800 [domz] DEBUG: Crawled (200) <GET http://www.dmoz.org/Computers/Programming/Languages/Python/Books/> (referer: None)
+    2018-06-17 15:51:56 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://www.dy2018.com/html/gndy/dyzz/> (referer: None)
     [s] Available Scrapy objects:
-    [s]   crawler    <scrapy.crawler.Crawler object at 0x02CE2530>
+    [s]   scrapy     scrapy module (contains scrapy.Request, scrapy.Selector, etc)
+    [s]   crawler    <scrapy.crawler.Crawler object at 0x0000000003A9AF98>
     [s]   item       {}
-    [s]   request    <GET http://www.dmoz.org/Computers/Programming/Languages/Python/Books/>
-    [s]   response   <200 http://www.dmoz.org/Computers/Programming/Languages/Python/Books/>
-    [s]   sel        <Selector xpath=None data=u'<html lang="en">\r\n<head>\r\n<meta http-equ'>
-    [s]   settings   <CrawlerSettings module=<module 'tutorial.settings' from 'tutorial\settings.pyc'>>
-    [s]   spider     <DomzSpider 'domz' at 0x302e350>
+    [s]   request    <GET https://www.dy2018.com/html/gndy/dyzz/>
+    [s]   response   <200 https://www.dy2018.com/html/gndy/dyzz/>
+    [s]   settings   <scrapy.settings.Settings object at 0x0000000004D92C18>
+    [s]   spider     <DianyingSpider 'dianying' at 0x501ce80>
     [s] Useful shortcuts:
+    [s]   fetch(url[, redirect=True]) Fetch URL and update local objects (by default, redirects are followed)
+    [s]   fetch(req)                  Fetch a scrapy.Request and update local objects
     [s]   shelp()           Shell help (print this help)
-    [s]   fetch(req_or_url) Fetch request (or URL) and update local objects
     [s]   view(response)    View response in a browser
-
-    >>>
 
 当shell载入后，您将得到一个包含response数据的本地 response 变量。输入 response.body 将输出response的包体， 输出 response.headers 可以看到response的包头。
 
@@ -149,19 +138,16 @@ shell的输出类似:
 让我们来试试:
 
     In [1]: sel.xpath('//title')
-    Out[1]: [<Selector xpath='//title' data=u'<title>Open Directory - Computers: Progr'>]
+    Out[1]: [<Selector xpath='//title' data='<title>电影 / 最新电影_电影天堂-迅雷电影下载</title>'>]
 
     In [2]: sel.xpath('//title').extract()
-    Out[2]: [u'<title>Open Directory - Computers: Programming: Languages: Python: Books</title>']
+    Out[2]: ['<title>电影 / 最新电影_电影天堂-迅雷电影下载</title>']
 
     In [3]: sel.xpath('//title/text()')
-    Out[3]: [<Selector xpath='//title/text()' data=u'Open Directory - Computers: Programming:'>]
+    Out[3]: [<Selector xpath='//title/text()' data='电影 / 最新电影_电影天堂-迅雷电影下载'>]
 
     In [4]: sel.xpath('//title/text()').extract()
-    Out[4]: [u'Open Directory - Computers: Programming: Languages: Python: Books']
-
-    In [5]: sel.xpath('//title/text()').re('(\w+):')
-    Out[5]: [u'Computers', u'Programming', u'Languages', u'Python']
+    Out[4]: ['电影 / 最新电影_电影天堂-迅雷电影下载']
 
 
 #### 提取数据
@@ -169,31 +155,30 @@ shell的输出类似:
 
 您可以在终端中输入 response.body 来观察HTML源码并确定合适的XPath表达式。不过，这任务非常无聊且不易。您可以考虑使用Firefox的Firebug扩展来使得工作更为轻松。详情请参考 [使用Firebug进行爬取](http://scrapy-chs.readthedocs.io/zh_CN/latest/topics/firebug.html#topics-firebug) 和 [借助Firefox来爬取](http://scrapy-chs.readthedocs.io/zh_CN/latest/topics/firefox.html#topics-firefox) 。
 
-在查看了网页的源码后，您会发现网站的信息是被包含在 第二个 \<ul> 元素中。
+这里笔者使用的是Chrome的XPath Helper扩展，很方便。
 
-我们可以通过这段代码选择该页面中网站列表里所有 \<li> 元素:
+在查看了网页的源码后，您会发现所有电影的title，详情页的link的信息的 XPath 路径是：
 
-    sel.xpath('//ul/li')
+    //a[@class="ulink"]
 
-网站的描述:
+进入单个详情页进行分析，可以发现：
+- 单个详情页的简介的信息的 XPath 路径是：
 
-    sel.xpath('//ul/li/text()').extract()
+      //div[@id="Zoom"]/p[36]/text()
+- 单个详情页的磁力链接的信息的 XPath 路径是：
 
-网站的标题:
+      //div[@id="Zoom"]/table[2]/tbody/tr/td/a/text()
 
-    sel.xpath('//ul/li/a/text()').extract()
+获取所有电影的title，详情页的link的信息:
 
-以及网站的链接:
-
-    sel.xpath('//ul/li/a/@href').extract()
+    sel.xpath('//a[@class="ulink"]').extract()
 
 之前提到过，每个 .xpath() 调用返回selector组成的list，因此我们可以拼接更多的 .xpath() 来进一步获取某个节点。我们将在下边使用这样的特性:
 
-    for sel in response.xpath('//ul/li'):
-        title = sel.xpath('a/text()').extract()
-        link = sel.xpath('a/@href').extract()
-        desc = sel.xpath('text()').extract()
-        print title, link, desc
+    for sel in response.xpath('//a[@class="ulink"]'):
+        title = sel.xpath('@title').extract()
+        link = sel.xpath('@href').extract()
+        print title, link
 
 > 关于嵌套selctor的更多详细信息，请参考 [嵌套选择器(selectors)](http://scrapy-chs.readthedocs.io/zh_CN/latest/topics/selectors.html#topics-selectors-nesting-selectors) 以及 [选择器(Selectors)](http://scrapy-chs.readthedocs.io/zh_CN/latest/topics/selectors.html#topics-selectors) 文档中的 [使用相对XPaths](http://scrapy-chs.readthedocs.io/zh_CN/latest/topics/selectors.html#topics-selectors-relative-xpaths) 部分。
 
@@ -201,29 +186,30 @@ shell的输出类似:
 
     import scrapy
 
-    class DmozSpider(scrapy.Spider):
-        name = "dmoz"
-        allowed_domains = ["dmoz.org"]
+    class DianyingSpider(scrapy.spiders.Spider):
+        name = "dianying"
+        allowed_domains = ["dy2018.com"]
         start_urls = [
-            "http://www.dmoz.org/Computers/Programming/Languages/Python/Books/",
-            "http://www.dmoz.org/Computers/Programming/Languages/Python/Resources/"
+            "https://www.dy2018.com/html/gndy/dyzz/"
         ]
 
         def parse(self, response):
-            for sel in response.xpath('//ul/li'):
-                title = sel.xpath('a/text()').extract()
-                link = sel.xpath('a/@href').extract()
-                desc = sel.xpath('text()').extract()
-                print title, link, desc
+            for sel in response.xpath('//a[@class="ulink"]'):
+                title = sel.xpath('@title').extract()
+                link = sel.xpath('@href').extract()
+                print(title, link)
 
-现在尝试再次爬取dmoz.org，您将看到爬取到的网站信息被成功输出:
+现在尝试再次爬取dy2018.com，您将看到爬取到的网站信息被成功输出:
 
-    scrapy crawl dmoz
+    scrapy crawl dianying
+
+#### 提取子页面数据
+
 
 ### 使用item
 Item 对象是自定义的python字典。 您可以使用标准的字典语法来获取到其每个字段的值。(字段即是我们之前用Field赋值的属性):
 
-    >>> item = DmozItem()
+    >>> item = DianyingItem()
     >>> item['title'] = 'Example title'
     >>> item['title']
     'Example title'
@@ -231,43 +217,36 @@ Item 对象是自定义的python字典。 您可以使用标准的字典语法�
 一般来说，Spider将会将爬取到的数据以 Item 对象返回。所以为了将爬取的数据返回，我们最终的代码将是:
 
     import scrapy
+    from dianying.items import DianyingItem
 
-    from tutorial.items import DmozItem
-
-    class DmozSpider(scrapy.Spider):
-        name = "dmoz"
-        allowed_domains = ["dmoz.org"]
+    class DianyingSpider(scrapy.Spider):
+        name = "dianying"
+        allowed_domains = ["dy2018.com"]
         start_urls = [
-            "http://www.dmoz.org/Computers/Programming/Languages/Python/Books/",
-            "http://www.dmoz.org/Computers/Programming/Languages/Python/Resources/"
+            "https://www.dy2018.com/html/gndy/dyzz/"
         ]
 
         def parse(self, response):
-            for sel in response.xpath('//ul/li'):
-                item = DmozItem()
-                item['title'] = sel.xpath('a/text()').extract()
-                item['link'] = sel.xpath('a/@href').extract()
-                item['desc'] = sel.xpath('text()').extract()
+            for sel in response.xpath('//a[@class="ulink"]'):
+                item = DianyingItem()
+                item['title'] = sel.xpath('@title').extract()
+                item['link'] = sel.xpath('@href').extract()
                 yield item
 
-> 您可以在 [dirbot](https://github.com/scrapy/dirbot) 项目中找到一个具有完整功能的spider。该项目可以通过 https://github.com/scrapy/dirbot 找到。
+现在对dy2018.com进行爬取将会产生 DianyingItem 对象:
 
-现在对dmoz.org进行爬取将会产生 DmozItem 对象:
-
-    [dmoz] DEBUG: Scraped from <200 http://www.dmoz.org/Computers/Programming/Languages/Python/Books/>
-         {'desc': [u' - By David Mertz; Addison Wesley. Book in progress, full text, ASCII format. Asks for feedback. [author website, Gnosis Software, Inc.\n],
-          'link': [u'http://gnosis.cx/TPiP/'],
-          'title': [u'Text Processing in Python']}
-    [dmoz] DEBUG: Scraped from <200 http://www.dmoz.org/Computers/Programming/Languages/Python/Books/>
-         {'desc': [u' - By Sean McGrath; Prentice Hall PTR, 2000, ISBN 0130211192, has CD-ROM. Methods to build XML applications fast, Python tutorial, DOM and SAX, new Pyxie open source XML processing library. [Prentice Hall PTR]\n'],
-          'link': [u'http://www.informit.com/store/product.aspx?isbn=0130211192'],
-          'title': [u'XML Processing with Python']}
+    2018-06-17 16:38:36 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.dy2018.com/html/gndy/dyzz/>
+    {'link': ['/i/99632.html'], 'title': ['2018年美国动作片《金蝉脱壳2》BD中英双字']}
+    2018-06-17 16:38:36 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.dy2018.com/html/gndy/dyzz/>
+    {'link': ['/i/99626.html'], 'title': ['2018年欧美6.5分剧情片《火狐一号出击》BD中英双字']}
+    2018-06-17 16:38:36 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.dy2018.com/html/gndy/dyzz/>
+    {'link': ['/i/99621.html'], 'title': ['2018年国产动作片《低压槽：欲望之城》HD国语中字']}
 
 
 ## 保存爬取到的数据
 最简单存储爬取的数据的方式是使用 [Feed exports](http://scrapy-chs.readthedocs.io/zh_CN/latest/topics/feed-exports.html#topics-feed-exports):
 
-    scrapy crawl dmoz -o items.json
+    scrapy crawl dianying -o items.json
 
 该命令将采用 [JSON](https://en.wikipedia.org/wiki/JSON) 格式对爬取的数据进行序列化，生成 items.json 文件。
 

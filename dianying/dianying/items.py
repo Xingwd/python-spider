@@ -7,8 +7,8 @@
 
 import scrapy
 
-
-class DmozItem(scrapy.Item):
+class DianyingItem(scrapy.Item):
     title = scrapy.Field()
     link = scrapy.Field()
-    desc = scrapy.Field()
+    jianjie = scrapy.Field()
+    magnet = scrapy.Field()
