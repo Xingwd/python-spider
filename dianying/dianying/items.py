@@ -8,7 +8,6 @@
 import scrapy
 
 class DianyingItem(scrapy.Item):
-    title = scrapy.Field()
-    link = scrapy.Field()
-    jianjie = scrapy.Field()
+    url = scrapy.Field()
+    name = scrapy.Field()
     magnet = scrapy.Field()
