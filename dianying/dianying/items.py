@@ -9,5 +9,5 @@ import scrapy
 
 class DianyingItem(scrapy.Item):
     url = scrapy.Field()
-    name = scrapy.Field()
+    title = scrapy.Field()
     magnet = scrapy.Field()
