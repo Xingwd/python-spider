@@ -64,9 +64,12 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'dianying.pipelines.DianyingPipeline': 300,
-#}
+ITEM_PIPELINES = {
+    #'dianying.pipelines.DianyingPipeline': 300,
+    'dianying.pipelines.MagnetPipeline': 1,
+    #'dianying.pipelines.JsonWriterPipeline':2,
+    'dianying.pipelines.MysqlPipeline':3,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -88,3 +91,16 @@ ROBOTSTXT_OBEY = True
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+FEED_EXPORTERS = {
+    'json': 'dianying.customconfigs.CustomJsonLinesItemExporter',
+}
+
+
+# mysql数据库信息
+MYSQL_HOST='192.168.1.201'
+MYSQL_USER='xwd'
+MYSQL_PASSWORD='xwd'
+MYSQL_PORT =3306
+MYSQL_DB='dianying'
+CHARSET='utf8'

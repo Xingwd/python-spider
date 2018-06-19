@@ -1,5 +1,6 @@
 import scrapy
 from dianying.items import DianyingItem
+from scrapy.contrib.loader import ItemLoader
 
 class DianyingSpider(scrapy.Spider):
     name = "dianying"
@@ -25,9 +26,9 @@ class DianyingSpider(scrapy.Spider):
     # 处理单个电影详情页
     def parseChild(self, response):
         # 获取电影信息，并提取数据
-        items = DianyingItem()
-        items['url'] = response.url
-        items['title'] = response.xpath('//div[@class="title_all"]/h1/text()').extract()
-        items['magnet'] = response.xpath('//div[@id="Zoom"]//a[starts-with(@href, "magnet:")]/@href').extract()
-        yield items
+        l = ItemLoader(item=DianyingItem(), response=response)
+        l.add_value('url', response.url)
+        l.add_xpath('title', '//div[@class="title_all"]/h1/text()')
+        l.add_xpath('magnet', '//div[@id="Zoom"]//a[starts-with(@href, "magnet:")]/@href')
+        yield l.load_item()
 
