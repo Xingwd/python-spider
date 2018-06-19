@@ -255,6 +255,8 @@ pipeline相关代码写到 pipelines.py 文件中。
 
 这里，我们写数据到mysql数据库，来体验pipeline的功能。
 
+以下代码的数据库连接部分是参照笔者创建的数据库信息，数据库创建过程的详细信息请看 create_table.sql 文件。如有不同，请注意相应调整。
+
 代码实现，编辑 pipelines.py 文件，追加代码：
 
     from scrapy.conf import settings
