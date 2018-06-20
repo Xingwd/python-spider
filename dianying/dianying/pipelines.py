@@ -48,7 +48,7 @@ class JsonWriterPipeline(object):
 class MysqlPipeline(object):
 
     def open_spider(self, spider):
-        host = settings['MYSQL_HOSTS']
+        host = settings['MYSQL_HOST']
         user = settings['MYSQL_USER']
         psd = settings['MYSQL_PASSWORD']
         db = settings['MYSQL_DB']
@@ -68,8 +68,8 @@ class MysqlPipeline(object):
         magnet = item['magnet']
 
         # sql 语句
-        insert_sql = """INSERT INTO dianying(title,
-                 url, magnet)
+        insert_sql = """INSERT INTO dianying(dianying_title, 
+                 dianying_url, dianying_magnet)
                  VALUES (%s, %s, %s)"""
         try:
             # 执行sql语句
