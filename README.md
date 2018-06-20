@@ -154,4 +154,6 @@ Spider是用户编写用于从单个网站(或者一些网站)爬取数据的类
 该命令将采用 [JSON](https://en.wikipedia.org/wiki/JSON) 格式对爬取的数据进行序列化，生成 items.json 文件。
 
 ---
+持续更新地址：https://github.com/Xingwd/python-spider/tree/scrapy-2
+
 更多信息请移驾 [项目升级版 scrapy-3](https://github.com/Xingwd/python-spider/tree/scrapy-3)
