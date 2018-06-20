@@ -317,3 +317,6 @@ pipeline相关代码写到 pipelines.py 文件中。
         'dianying.pipelines.JsonWriterPipeline':2,
         'dianying.pipelines.MysqlPipeline':3,
     }
+
+---
+持续更新地址：https://github.com/Xingwd/python-spider/tree/scrapy-3
