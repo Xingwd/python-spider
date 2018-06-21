@@ -200,15 +200,15 @@ pipeline相关代码写到 pipelines.py 文件中。
 
     ......
 
-    class MagnetPipeline(object):
+    class JsonWriterPipeline(object):
+        def __init__(self):
+            self.file = open('pipeitems.json', 'wb')
+
         def process_item(self, item, spider):
-            # 如果页面中没有magnet的信息，那么对应的item就没有 'magnet' 这个key
-            # 所以这里判断item的所有key中有没有 'magnet' 即可
-            if 'magnet' in item.keys():
-                return item
-            else:
-                # 丢弃或者不再处理item
-                raise DropItem("Without magnet in {0}".format(item))
+            line = json.dumps(dict(item)) + "\n"
+            # 这里要求写入bytes类型，所以将str类型转换成bytes类型
+            self.file.write(line.encode())
+            return item
 
 启用JsonWriterPipeline组件，添加一行 "'dianying.pipelines.JsonWriterPipeline':2,"：
 
